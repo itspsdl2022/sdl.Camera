@@ -10,13 +10,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final static int REQ_PHOTO = 1234;
     private Bitmap photoImage = null;
 
     @Override
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
             @SuppressLint("QueryPermissionsNeeded")
             List<ResolveInfo> activities = manager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
             if (!activities.isEmpty()) {
-                startActivityForResult(intent, REQ_PHOTO);
+                launcher.launch(intent);
             } else {
                 Toast.makeText(MainActivity.this, R.string.toast_no_activities, Toast.LENGTH_LONG).show();
             }
@@ -48,15 +49,12 @@ public class MainActivity extends AppCompatActivity {
         photoView.setImageBitmap(photoImage);
     }
 
-    @Override
-    protected void onActivityResult(int reqCode, int resCode, Intent data) {
-        super.onActivityResult(reqCode, resCode, data);
-        if (reqCode == REQ_PHOTO) {
-            if (resCode == RESULT_OK) {
-                // TODO: You should implement the code that retrieve a bitmap image
-            }
-        }
-    }
+    ActivityResultLauncher<Intent> launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    // TODO: You should implement the code that retrieve a bitmap image
+                }
+            });
 
     @Override
     protected void onResume() {
